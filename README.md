@@ -20,7 +20,7 @@ pnpm add @agentmail/agentid-better-auth
 Register this callback URL in the AgentID console:
 
 ```text
-https://yourapp.com/api/auth/oauth2/callback/agentid
+https://yourapp.com/api/auth/callback/agentid
 ```
 
 Then add the helper to Better Auth:
@@ -44,9 +44,26 @@ export const auth = betterAuth({
 });
 ```
 
-Add the Generic OAuth client plugin and start sign-in with `providerId` set to
-`"agentid"`. See the [AgentID Better Auth guide](https://www.agentid.com/docs/better-auth)
-for the client-side setup.
+Use your existing Better Auth client, or create one. No client plugin is
+required:
+
+```ts
+import { createAuthClient } from "better-auth/react";
+
+export const authClient = createAuthClient();
+```
+
+Start sign-in with the standard social-provider API:
+
+```ts
+await authClient.signIn.social({
+	provider: "agentid",
+	callbackURL: "/",
+});
+```
+
+See the [AgentID Better Auth guide](https://www.agentid.com/docs/better-auth)
+for the complete setup.
 
 ## Scopes and owner claims
 
@@ -71,7 +88,7 @@ example of reading them later with the stored access token.
 - Discovery: `https://auth.agentid.com/.well-known/openid-configuration`
 - Token endpoint authentication: `client_secret_basic`
 - PKCE: required (`S256`)
-- Callback path: `/api/auth/oauth2/callback/agentid`
+- Callback path: `/api/auth/callback/agentid`
 - ID tokens: verified through AgentID's discovery metadata and JWKS
 
 AgentID does not echo an OIDC nonce in authorization-code ID tokens. The helper
